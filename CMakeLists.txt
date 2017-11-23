@@ -4,6 +4,15 @@ if (NOT DEFINED CMAKE_BUILD_TYPE)
    set (CMAKE_BUILD_TYPE Release CACHE STRING "Build type")
 endif ()
 
+# hunter initialize 
+include("cmake/HunterGate.cmake") 
+HunterGate(
+    URL "https://github.com/CHChang810716/hunter/archive/master.zip"
+    SHA1 "641859481d78aa4c14df51d2e072edef62ab83d5"
+)
+# hunter initialize done
+    
+
 project(arpack C Fortran)
 
 # Adopted from https://github.com/feymark/arpack.git
