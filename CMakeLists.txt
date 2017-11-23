@@ -7,8 +7,9 @@ endif ()
 # hunter initialize 
 include("cmake/HunterGate.cmake") 
 HunterGate(
-    URL "https://github.com/CHChang810716/hunter/archive/master.zip"
-    SHA1 "647886d38954fa84b7dfe964ca2d48647e9bd246"
+    URL "https://github.com/ruslo/hunter/archive/v0.19.167.tar.gz"
+    SHA1 "244a13718ea2e6c0c8998d15559c7e459f615708"
+    
 )
 # hunter initialize done
     
