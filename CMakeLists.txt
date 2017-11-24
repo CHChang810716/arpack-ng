@@ -124,6 +124,7 @@ if (MPI)
 endif()
 
 option(ENABLE_STATIC "Static linking (shared otherwise)" ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if (ENABLE_STATIC)
   add_library(arpack STATIC ${arpackutil_STAT_SRCS} ${arpacksrc_STAT_SRCS} ${arpacksrc_ICB})
 else ()
