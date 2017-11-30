@@ -9,7 +9,7 @@ include("cmake/HunterGate.cmake")
 HunterGate(
     URL "https://github.com/ruslo/hunter/archive/v0.19.167.tar.gz"
     SHA1 "244a13718ea2e6c0c8998d15559c7e459f615708"
-    
+    FILEPATH "${CMAKE_CURRENT_LIST_DIR}/config.cmake"
 )
 # hunter initialize done
     
@@ -61,8 +61,10 @@ function(pexamples list_name)
     endforeach()
 endfunction(pexamples)
 
+hunter_add_package( LAPACK )
+find_package( LAPACK CONFIG REQUIRED )
 #if (SYSTEM_BLAS)
-    find_package(BLAS REQUIRED)
+#    find_package(BLAS REQUIRED)
 #endif()
 #if (BLAS_LIBRARIES)
 #    set(SYSTEM_BLAS ON)
@@ -76,7 +78,7 @@ if (MPI)
 endif()
 
 #if (SYSTEM_LAPACK)
-    find_package(LAPACK REQUIRED)
+#    find_package(LAPACK REQUIRED)
 #endif()
 #if (BLAS_LIBRARIES)
 #    set(SYSTEM_LAPACK ON)
@@ -124,8 +126,8 @@ if (MPI)
 endif()
 
 option(ENABLE_STATIC "Static linking (shared otherwise)" ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if (ENABLE_STATIC)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
   add_library(arpack STATIC ${arpackutil_STAT_SRCS} ${arpacksrc_STAT_SRCS} ${arpacksrc_ICB})
 else ()
   add_library(arpack SHARED ${arpackutil_STAT_SRCS} ${arpacksrc_STAT_SRCS} ${arpacksrc_ICB})
@@ -136,8 +138,8 @@ if(ICB)
   install(FILES arpack.hpp DESTINATION include)
 endif()
 
-target_link_libraries(arpack ${BLAS_LIBRARIES})
-target_link_libraries(arpack ${LAPACK_LIBRARIES})
+target_link_libraries(arpack blas)
+target_link_libraries(arpack lapack)
 set_target_properties(arpack PROPERTIES OUTPUT_NAME arpack${LIBSUFFIX})
 set_target_properties(arpack PROPERTIES VERSION 2.0.0)
 set_target_properties(arpack PROPERTIES SOVERSION 2)
