@@ -2,9 +2,9 @@
 
 include(CMakeFindDependencyMacro)
 
-find_package(LAPACK)
+find_package(LAPACK CONFIG REQUIRED)
 if(@MPI@)
-  find_package(MPI)
+  find_package(MPI CONFIG REQUIRED)
 endif()
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake")
 check_required_components("@PROJECT_NAME@")
