@@ -466,7 +466,7 @@ set(libdir \${exec_prefix}/${CMAKE_INSTALL_LIBDIR})
 set(PACKAGE_NAME ${PROJECT_NAME})
 set(targets_export_name "${PROJECT_NAME}-targets")
 set(namespace           "${PROJECT_NAME}::")
-set(config_install_dir  "lib/cmake/${PROJECT_NAME}")
+set(config_install_dir  "lib/cmake/arpack-ng")
 # TODO: Fill these in with something appropriate.
 #set(PACKAGE_VERSION)
 #set(PACKAGE_URL)
