@@ -136,6 +136,10 @@ endif()
 if(ICB)
   install(FILES arpack.h DESTINATION include)
   install(FILES arpack.hpp DESTINATION include)
+  target_include_directories(arpack PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
 endif()
 
 target_link_libraries(arpack blas)
