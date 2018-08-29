@@ -7,8 +7,8 @@ endif ()
 # hunter initialize 
 include("cmake/HunterGate.cmake") 
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.19.167.tar.gz"
-    SHA1 "244a13718ea2e6c0c8998d15559c7e459f615708"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.20.tar.gz"
+    SHA1 "88d59b0942a490db3885f52dd81ab56e85f80e1e"
     FILEPATH "${CMAKE_CURRENT_LIST_DIR}/config.cmake"
 )
 # hunter initialize done
@@ -457,12 +457,16 @@ endif()
 ############################
 # 'make install' to the correct location
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 # Convert variable names to those expected by the .pc file.
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix \${prefix})
 set(libdir \${exec_prefix}/${CMAKE_INSTALL_LIBDIR})
 set(PACKAGE_NAME ${PROJECT_NAME})
+set(targets_export_name "${PROJECT_NAME}-targets")
+set(namespace           "${PROJECT_NAME}::")
+set(config_install_dir  "lib/cmake/${PROJECT_NAME}")
 # TODO: Fill these in with something appropriate.
 #set(PACKAGE_VERSION)
 #set(PACKAGE_URL)
@@ -474,26 +478,38 @@ configure_file(arpack.pc.in arpack${LIBSUFFIX}.pc @ONLY)
 #    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 install(TARGETS arpack
+    EXPORT "${targets_export_name}"
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if (MPI)
   install(TARGETS parpack
+      EXPORT "${targets_export_name}"
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
 
+install(
+    EXPORT      "${targets_export_name}"
+    NAMESPACE   "${namespace}"
+    DESTINATION "${config_install_dir}"
+)
+
 # Provide find_package for arpack-ng to users.
-configure_file(arpack-ng-config.cmake.in "${PROJECT_BINARY_DIR}/arpack-ng-config.cmake" @ONLY)
-install(FILES "${PROJECT_BINARY_DIR}/arpack-ng-config.cmake" DESTINATION "${CMAKE_INSTALL_PREFIX}") # find_package(arpack-ng)
+configure_package_config_file(
+    arpack-ng-config.cmake.in 
+    "${PROJECT_BINARY_DIR}/arpack-ng-config.cmake" 
+    INSTALL_DESTINATION "${config_install_dir}"
+)
+install(FILES "${PROJECT_BINARY_DIR}/arpack-ng-config.cmake" DESTINATION "${config_install_dir}") # find_package(arpack-ng)
 set(arpack_ng_MAJOR_VERSION 3)
 set(arpack_ng_MINOR_VERSION 6)
 set(arpack_ng_PATCH_VERSION 0)
 set(arpack_ng_VERSION ${arpack_ng_MAJOR_VERSION}.${arpack_ng_MINOR_VERSION}.${arpack_ng_PATCH_VERSION})
 configure_file(arpack-ng-config-version.cmake.in "${PROJECT_BINARY_DIR}/arpack-ng-config-version.cmake" @ONLY)
-install(FILES "${PROJECT_BINARY_DIR}/arpack-ng-config-version.cmake" DESTINATION "${CMAKE_INSTALL_PREFIX}")
+install(FILES "${PROJECT_BINARY_DIR}/arpack-ng-config-version.cmake" DESTINATION "${config_install_dir}")
 
 # Packaging: ease arpack-ng distribution (precompiled binaries and sources tarballs).
 set(CPACK_VERSION_MAJOR "${arpack_ng_MAJOR_VERSION}")
