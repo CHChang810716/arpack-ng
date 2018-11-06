@@ -7,8 +7,8 @@ endif ()
 # hunter initialize 
 include("cmake/HunterGate.cmake") 
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.20.tar.gz"
-    SHA1 "88d59b0942a490db3885f52dd81ab56e85f80e1e"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.34.tar.gz"
+    SHA1 "70287b1ffa810ee4e952052a9adff9b4856d0d54"
     FILEPATH "${CMAKE_CURRENT_LIST_DIR}/config.cmake"
 )
 # hunter initialize done
@@ -48,7 +48,7 @@ function(examples list_name)
     foreach(l ${${list_name}})
         get_filename_component(lwe ${l} NAME_WE)
         add_executable(${lwe} ${arpackexample_DIR}/${l} ${examples_EXTRA_SRCS})
-        target_link_libraries(${lwe} arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+        target_link_libraries(${lwe} arpack)
         add_test(NAME "${lwe}_ex" COMMAND ${lwe} WORKING_DIRECTORY ${arpackexample_DIR})
     endforeach()
 endfunction(examples)
@@ -61,8 +61,10 @@ function(pexamples list_name)
     endforeach()
 endfunction(pexamples)
 
-hunter_add_package( LAPACK )
-find_package( LAPACK CONFIG REQUIRED )
+# hunter_add_package( LAPACK )
+# find_package( LAPACK CONFIG REQUIRED )
+hunter_add_package(OpenBLAS)
+find_package(OpenBLAS CONFIG REQUIRED)
 #if (SYSTEM_BLAS)
 #    find_package(BLAS REQUIRED)
 #endif()
@@ -142,8 +144,7 @@ if(ICB)
 )
 endif()
 
-target_link_libraries(arpack blas)
-target_link_libraries(arpack lapack)
+target_link_libraries(arpack PUBLIC OpenBLAS::OpenBLAS)
 set_target_properties(arpack PROPERTIES OUTPUT_NAME arpack${LIBSUFFIX})
 set_target_properties(arpack PROPERTIES VERSION 2.0.0)
 set_target_properties(arpack PROPERTIES SOVERSION 2)
@@ -155,8 +156,8 @@ if (MPI)
     add_library(parpack SHARED ${parpacksrc_STAT_SRCS} ${parpackutil_STAT_SRCS})
   endif ()
 
-    target_link_libraries(parpack ${MPI_Fortran_LIBRARIES})
-    target_link_libraries(parpack arpack)
+    target_link_libraries(parpack PUBLIC ${MPI_Fortran_LIBRARIES})
+    target_link_libraries(parpack PUBLIC arpack)
     set_target_properties(parpack PROPERTIES OUTPUT_NAME parpack${LIBSUFFIX})
     set_target_properties(parpack PROPERTIES VERSION 2.0.0)
     set_target_properties(parpack PROPERTIES SOVERSION 2)
@@ -413,46 +414,46 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Tests)
 
 add_executable(dnsimp_test EXCLUDE_FROM_ALL TESTS/dnsimp.f TESTS/mmio.f TESTS/debug.h)
 set_target_properties( dnsimp_test PROPERTIES OUTPUT_NAME  dnsimp )
-target_link_libraries(dnsimp_test arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(dnsimp_test arpack)
 add_custom_command(TARGET dnsimp_test POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/TESTS/testA.mtx testA.mtx
 )
 add_test(dnsimp_test Tests/dnsimp)
 
 add_executable(bug_1315_single EXCLUDE_FROM_ALL TESTS/bug_1315_single.c)
-target_link_libraries(bug_1315_single arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(bug_1315_single arpack)
 add_test(bug_1315_single Tests/bug_1315_single)
 
 add_executable(bug_1315_double EXCLUDE_FROM_ALL TESTS/bug_1315_double.c)
-target_link_libraries(bug_1315_double arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(bug_1315_double arpack)
 add_test(bug_1315_double Tests/bug_1315_double)
 
 add_executable(bug_1323 EXCLUDE_FROM_ALL TESTS/bug_1323.f)
-target_link_libraries(bug_1323 arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(bug_1323 arpack)
 add_test(bug_1323 Tests/bug_1323)
 
 add_executable(bug_58_double EXCLUDE_FROM_ALL TESTS/bug_58_double.f)
-target_link_libraries(bug_58_double arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(bug_58_double arpack)
 add_test(bug_58_double Tests/bug_58_double)
 
 add_dependencies(check dnsimp_test bug_1315_single bug_1315_double bug_1323 bug_58_double)
 
 if(MPI)
   add_executable(issue46 PARPACK/TESTS/MPI/issue46.f)
-  target_link_libraries(issue46 parpack arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+  target_link_libraries(issue46 parpack arpack)
   add_test(issue46 Tests/issue46)
 endif()
 
 if(ICB)
   add_executable(icb_arpack_c TESTS/icb_arpack_c.c)
   target_include_directories(icb_arpack_c PUBLIC ..)
-  target_link_libraries(icb_arpack_c arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+  target_link_libraries(icb_arpack_c arpack)
   add_test(icb_arpack_c Tests/icb_arpack_c)
 
   enable_language(CXX) # For testing binding with c++.
   add_executable(icb_arpack_cpp TESTS/icb_arpack_cpp.cpp)
   target_include_directories(icb_arpack_cpp PUBLIC ..)
-  target_link_libraries(icb_arpack_cpp arpack ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+  target_link_libraries(icb_arpack_cpp arpack)
   add_test(icb_arpack_cpp Tests/icb_arpack_cpp)
 endif()
 
