@@ -1,7 +1,11 @@
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
-find_package(OpenBLAS CONFIG REQUIRED)
+if(@USE_OPENBLAS@)
+  find_package(OpenBLAS CONFIG REQUIRED)
+else()
+  find_package(LAPACK CONFIG REQUIRED)
+endif()
 if(@MPI@)
   find_package(MPI CONFIG REQUIRED)
 endif()
