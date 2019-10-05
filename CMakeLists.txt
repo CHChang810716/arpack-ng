@@ -173,9 +173,6 @@ if (INTERFACE64)
     endif ()
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBLASINT=int64_t")
-    if(ICB)
-      target_sources(arpack PUBLIC stdint.h)
-    endif()
 endif ()
 
 if (SYMBOLSUFFIX)

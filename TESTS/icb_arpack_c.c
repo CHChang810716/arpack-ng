@@ -11,6 +11,7 @@
 #include <stdbool.h> // bool.
 #include "arpack.h"
 #include <complex.h> // creal, cimag.
+#include <stdint.h>
 
 /* test program to solve for the 9 largest eigenvalues of
  * A*x = lambda*x where A is the diagonal matrix
