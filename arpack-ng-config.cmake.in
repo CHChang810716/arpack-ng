@@ -1,7 +1,9 @@
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
-if(@USE_OPENBLAS@)
+if("@BLAS_LIB_USE@" STREQUAL "MKL")
+  find_package(LAPACK CONFIG REQUIRED)
+elseif("@BLAS_LIB_USE@" STREQUAL "OpenBLAS")
   find_package(OpenBLAS CONFIG REQUIRED)
 else()
   find_package(LAPACK CONFIG REQUIRED)
