@@ -7,8 +7,8 @@ endif ()
 # hunter initialize 
 include("cmake/HunterGate.cmake") 
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.34.tar.gz"
-    SHA1 "70287b1ffa810ee4e952052a9adff9b4856d0d54"
+    URL "https://github.com/CHChang810716/hunter/archive/170bdfbbe468a8cf7d58e6f83079f23298de1380.zip"
+    SHA1 "7a0445a0d209c65490abce324ad53f55b8082828"
     FILEPATH "${CMAKE_CURRENT_LIST_DIR}/config.cmake"
 )
 # hunter initialize done
@@ -33,7 +33,19 @@ set(LIBSUFFIX ""
 set(SYMBOLSUFFIX ""
     CACHE STRING "suffix to add to ARPACK, BLAS and LAPACK function names")
 option(INTERFACE64 "use the 64-bit integer interface (ILP64) for ARPACK, BLAS and LAPACK" ON)
+option(USE_MKL "Use MKL as the blas library" OFF)
 option(USE_OPENBLAS "use openblas as blas library" OFF)
+
+if(USE_MKL)
+  message(STATUS "MKL not yet supported, use LAPACK")
+  set(BLAS_LIB_USE "LAPACK")
+elseif(USE_OPENBLAS)
+  message(STATUS "USE OpenBLAS as BLAS library")
+  set(BLAS_LIB_USE "OpenBLAS")
+else()
+  message(STATUS "USE LAPACK as BLAS library")
+  set(BLAS_LIB_USE "LAPACK")
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
@@ -62,13 +74,17 @@ function(pexamples list_name)
     endforeach()
 endfunction(pexamples)
 
-if(USE_OPENBLAS)
-  hunter_add_package(OpenBLAS)
+if(BLAS_LIB_USE STREQUAL "MKL")
+  hunter_add_package(mkl-cmake)
+  find_package(mkl CONFIG REQUIRED)
+  list(APPEND BLAS_LIBS mkl::mkl)
+elseif(BLAS_LIB_USE STREQUAL "OpenBLAS")
+  hunter_add_package( OpenBLAS )
   find_package(OpenBLAS CONFIG REQUIRED)
   list(APPEND BLAS_LIBS OpenBLAS::OpenBLAS)
 else()
   hunter_add_package( LAPACK )
-  find_package( LAPACK CONFIG REQUIRED )
+  find_package(LAPACK CONFIG REQUIRED)
   list(APPEND BLAS_LIBS lapack blas)
 endif()
 
